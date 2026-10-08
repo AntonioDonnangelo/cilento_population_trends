@@ -1,0 +1,18 @@
+
+@page { margin: 2.2cm; }
+body { font-family: Georgia, "DejaVu Serif", serif; font-size: 11pt; line-height: 1.5; color: #222; }
+header#title-block-header { text-align: center; border-bottom: 2px solid #2E5C8A; padding-bottom: 14px; margin-bottom: 24px; }
+h1.title { font-family: Helvetica, Arial, sans-serif; color: #2E5C8A; font-size: 20pt; }
+p.subtitle { font-size: 12pt; color: #555; }
+h2 { font-family: Helvetica, Arial, sans-serif; color: #2E5C8A; font-size: 14pt; margin-top: 26px; border-bottom: 1px solid #d8e2ec; padding-bottom: 4px; }
+h3 { font-family: Helvetica, Arial, sans-serif; color: #3a5f80; font-size: 12pt; margin-top: 18px; }
+figure { text-align: center; margin: 16px 0; }
+figure img { max-width: 90%; }
+p { page-break-inside: avoid; }
+table { border-collapse: separate; border-spacing: 0; width: 100%; margin: 12px 0; font-size: 9.5pt; page-break-inside: avoid; }
+tr { page-break-inside: avoid; }
+th, td { border: 1px solid #ccc; padding: 5px 8px; text-align: left; }
+th { background-color: #EAF1F8; color: #2E5C8A; }
+tr:nth-child(even) { background-color: #F7F9FB; }
+blockquote { background-color: #FBF3E7; border-left: 4px solid #C77B24; margin: 14px 0; padding: 8px 16px; color: #444; }
+strong { color: #1a3a5c; }
