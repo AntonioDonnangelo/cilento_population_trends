@@ -7,6 +7,8 @@ comune, a comparison between coastal and inland towns, and a 20-year projection.
 The full report (in Italian) is in [`results/pdf/report_cilento.pdf`](results/pdf/report_cilento.pdf).
 The main results are also shown in the readme.
 
+A dynamic dashboard for visualization is available [here](https://antoniodonnangelo.shinyapps.io/trend_popolazione_cilento/).
+
 ## What the code does
 
 ### `analisi_comuni.py`
