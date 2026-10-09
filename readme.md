@@ -1,5 +1,7 @@
 # Cilento population trends (1982-2026)
 
+12.08.2026
+
 Population trends of 91 towns in the Cilento area (province of Salerno), using
 ISTAT resident population data from 1982 to 2026. Linear and polynomial fits per
 comune, a comparison between coastal and inland towns, and a 20-year projection.
