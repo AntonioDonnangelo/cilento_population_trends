@@ -1,7 +1,7 @@
 ---
 title: "Lo spopolamento del Cilento interno: un'analisi quantitativa dell'andamento demografico comunale (1982-2026)"
 author: "Antonio Donnangelo"
-date: "12/08/2026"
+date: "19/10/2026"
 geometry: margin=2.5cm
 fontsize: 11pt
 ---
@@ -14,8 +14,8 @@ Salerno) nel periodo **1982-2026**, integrando
 fonti storiche ISTAT eterogenee (ricostruzioni intercensuarie e bilanci
 demografici POSAS) in un'unica serie temporale armonizzata. Nel periodo
 considerato la popolazione aggregata dei comuni analizzati è passata da
-**248,765** a **230,044** abitanti
-(**-7.5%**), con il
+**247,872** a **228,858** abitanti
+(**-7.7%**), con il
 **74%** dei comuni in calo. Emerge una netta
 divergenza tra i comuni costieri (variazione mediana
 **+9.2%**) e quelli dell'entroterra (variazione
@@ -85,10 +85,7 @@ scomposizione per sesso è disponibile.
 L'analisi copre **91 comuni** dell'area del Cilento,
 selezionati come sottoinsieme dei comuni della provincia di Salerno
 ricadenti nell'area storico-geografica del Cilento (Alto e Basso
-Cilento, Vallo di Diano, Alburni). Per **90**
-comuni la serie copre l'intero periodo 1982-2026;
-per Capaccio Paestum, per limiti della fonte disponibile, la serie inizia
-nel 2002.
+Cilento, Vallo di Diano, Alburni). Per **90** comuni la serie copre l'intero periodo 1982-2026; per Capaccio Paestum, per limiti della fonte disponibile, la serie inizia nel 2002.
 
 Per un sottoinsieme dell'analisi, i comuni sono stati classificati come
 **costieri** (n=15) se il loro territorio comunale si
@@ -133,9 +130,9 @@ periodo non catturate dal modello lineare.
 
 Nel periodo 1982-2026 la popolazione
 aggregata dei 91 comuni analizzati è passata da
-**248,765** a **230,044**
-abitanti, una variazione di **-18,721** unità
-(-7.5% sul totale). Il
+**247,872** a **228,858**
+abitanti, una variazione di **-19,014** unità
+(-7.7% sul totale). Il
 **67 su 91** dei comuni
 (74%) ha registrato una perdita di popolazione;
 **7** comuni hanno perso oltre il 50% della popolazione
@@ -186,7 +183,7 @@ crescita maggiore è **Torchiara**
 | Castellabate | 6,890 | 8,672 | 25.9 |
 | Giungano | 1,047 | 1,305 | 24.6 |
 | Laureana Cilento | 1,022 | 1,255 | 22.8 |
-| Atena Lucana | 1,991 | 2,400 | 20.5 |
+| Omignano | 1,410 | 1,636 | 16.0 |
 
 ## Costa vs. entroterra
 
@@ -270,15 +267,13 @@ la proiezione lo colloca al 2046.
 | Laureana Cilento | 1,255 | 1,331 | 6.1 |
 | Ogliastro Cilento | 2,307 | 2,343 | 1.6 |
 
+
 > **Attenzione a un artefatto della curvatura polinomiale.** Alcuni dei
 > comuni con la crescita storica 1982-2026 più
-> marcata — Agropoli (storica +47.7%) e
-> Torchiara (storica +70.2%) tra
-> gli altri — **non compaiono** nella classifica delle migliori prospettive:
-> il fit polinomiale di secondo grado, pur descrivendo bene i dati storici
-> (R² > 0.97 per entrambi), proietta per Agropoli una variazione
-> negativa (-12.7%
-> al 2046). Questo è con ogni probabilità un artefatto
+> marcata, come Torchiara (storica +70.2%) e Agropoli (storica +47.7%), **non compaiono** nella classifica delle migliori
+> prospettive: il fit polinomiale di secondo grado, pur descrivendo bene i
+> dati storici (R² di almeno 0.97), proietta per Agropoli una variazione negativa (-12.7% al 2046).
+> Questo è con ogni probabilità un artefatto
 > dell'estrapolazione quadratica — una parabola che si adatta bene a una
 > crescita che rallenta negli anni recenti può curvare verso il basso una
 > volta proiettata fuori dal periodo osservato — più che un segnale reale
@@ -310,8 +305,8 @@ al 2046 vanno lette come estrapolazioni di
 tendenza, non come previsioni demografiche in senso proprio. Terzo,
 l'andamento aggregato di Figura 5 è ricostruito dai modelli individuali e
 non da dati grezzi sommati anno per anno, il che ne limita l'affidabilità
-per la lettura di eventuali inversioni di tendenza recenti. Quarto, come
-mostrato dal caso di Agropoli (Sezione 3.5), l'estrapolazione polinomiale
+per la lettura di eventuali inversioni di tendenza recenti. Quarto,
+come mostrato dal caso di Agropoli (Sezione 3.5), l'estrapolazione polinomiale
 può curvare vistosamente al di fuori del periodo osservato anche quando il
 fit è eccellente sui dati storici: la classifica dei comuni "a rischio" o
 "in crescita" per il 2046 va quindi interpretata come

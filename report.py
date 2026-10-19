@@ -206,69 +206,108 @@ def fig_classifica_proiezione(df: pd.DataFrame, n: int, anno_proiezione: int, pa
     ax.barh(combinato["Comune"], combinato["Variazione % proiettata"], color=colori)
     ax.axvline(0, color="black", linewidth=0.8)
     ax.set_xlabel(f"Variazione % proiettata (ultimo anno osservato \u2192 {anno_proiezione})")
-    ax.set_title(f"I {n} comuni più a rischio e i {n} con le migliori prospettive (proiezione polinomiale)")
+    ax.set_title(f"I {n} comuni più a rischio e i {n} con le migliori prospettive")
     ax.grid(axis="x", alpha=0.3)
     fig.tight_layout()
     fig.savefig(path, dpi=150)
     plt.close(fig)
 
 
+
 def fig_traiettorie_rischio_crescita(
     pop_annua: pd.DataFrame, comuni_rischio: list[str], comuni_crescita: list[str],
     grado: int, anno_proiezione: int, path: Path
 ) -> None:
-    # observed (solid) + projection (dashed). Two panels because the at-risk
-    # comuni are much smaller than the growing ones, on one axis they'd be flat
-    fig, (ax_r, ax_c) = plt.subplots(1, 2, figsize=(14, 7.5))
+    fig, (ax_r, ax_c) = plt.subplots(1, 2, figsize=(16, 9))
 
-    for ax, comuni_gruppo, cmap, titolo in [
-        (ax_r, comuni_rischio, plt.get_cmap("Reds"), "Comuni più a rischio"),
-        (ax_c, comuni_crescita, plt.get_cmap("Blues"), "Comuni con le migliori prospettive"),
+    for ax, comuni_gruppo, cmap, titolo, nomi_a_sinistra in [
+        (ax_r, comuni_rischio, plt.get_cmap("Reds"), "Comuni più a rischio", True),
+        (ax_c, comuni_crescita, plt.get_cmap("Blues"), "Comuni con le migliori prospettive", False),
     ]:
         testi = []
+
         for i, comune in enumerate(comuni_gruppo):
             sotto = pop_annua[pop_annua["Comune"] == comune].sort_values("Anno")
             if len(sotto) < 2:
                 continue
+
             colore = cmap(0.35 + 0.55 * i / max(1, len(comuni_gruppo) - 1))
 
-            ax.plot(sotto["Anno"], sotto["Popolazione"], color=colore, linewidth=1.6)
+            ax.plot(
+                sotto["Anno"], sotto["Popolazione"],
+                color=colore, linewidth=2
+            )
 
             modello = fit_polinomiale(sotto, grado)
             anno_ultimo = int(sotto["Anno"].max())
             anni_futuri = np.arange(anno_ultimo, anno_proiezione + 1)
             pop_futura = [proietta_popolazione(modello, a) for a in anni_futuri]
-            ax.plot(anni_futuri, pop_futura, color=colore, linewidth=1.6,
-                    linestyle="--", alpha=0.85)
+
+            ax.plot(
+                anni_futuri, pop_futura,
+                color=colore, linewidth=2,
+                linestyle="--", alpha=0.9
+            )
+
+            if nomi_a_sinistra:
+                x = sotto["Anno"].iloc[0] - 1
+                y = sotto["Popolazione"].iloc[0]
+                allineamento = "right"
+            else:
+                x = anni_futuri[-1]
+                y = pop_futura[-1]
+                allineamento = "left"
 
             testi.append(ax.text(
-                anni_futuri[-1], pop_futura[-1], comune,
-                color=colore, fontsize=7.5, fontweight="bold", va="center",
+                x, y, comune,
+                color=colore,
+                fontsize=10,
+                fontweight="bold",
+                va="center",
+                ha=allineamento,
             ))
 
-        ax.set_xlabel("Anno")
-        ax.set_ylabel("Popolazione")
-        ax.set_title(titolo, fontsize=10)
+        ax.set_xlabel("Anno", fontsize=13)
+        ax.set_ylabel("Popolazione", fontsize=13)
+        ax.set_title(titolo, fontsize=15, pad=12)
+
+        ax.tick_params(axis="both", labelsize=11)
         ax.grid(True, alpha=0.3)
         ax.set_ylim(bottom=0)
 
         xmin, xmax = ax.get_xlim()
-        ax.set_xlim(xmin, xmax + (xmax - xmin) * 0.16)
+        if nomi_a_sinistra:
+            ax.set_xlim(xmin - (xmax - xmin) * 0.25, xmax)
+        else:
+            ax.set_xlim(xmin, xmax + (xmax - xmin) * 0.20)
+
+        primo_decennio = int(pop_annua["Anno"].min()) // 10 * 10
+        ax.set_xticks(np.arange(primo_decennio, anno_proiezione + 1, 10))
 
         if testi and HA_ADJUSTTEXT:
             adjust_text(
-                testi, ax=ax,
-                only_move={"text": "y", "static": "y", "explode": "y", "pull": "y"},
-                arrowprops=dict(arrowstyle="-", color="grey", lw=0.5, alpha=0.6),
+                testi,
+                ax=ax,
+                only_move={
+                    "text": "y",
+                    "static": "y",
+                    "explode": "y",
+                    "pull": "y",
+                },
+                arrowprops=dict(
+                    arrowstyle="-", color="grey", lw=0.7, alpha=0.6
+                ),
             )
 
     fig.suptitle(
-        "Traiettorie storiche (linea continua) e proiezione polinomiale (tratteggio)",
-        fontsize=12,
+        "Traiettorie storiche (linea continua) e proiezione (tratteggio)",
+        fontsize=16
     )
-    fig.tight_layout()
-    fig.savefig(path, dpi=150)
+
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(path, dpi=200, bbox_inches="tight")
     plt.close(fig)
+
 
 
 def fig_costa_vs_interno(df: pd.DataFrame, path: Path) -> None:
@@ -378,6 +417,54 @@ def genera_markdown(
         "Popolazione finale": f"Pop. {stats['anno_max']}", "Variazione %": "Var. %",
     }
 
+    # comuni whose series starts after the first year
+    parziali = df[df["Anno iniziale"] > stats["anno_min"]]
+    if parziali.empty:
+        copertura = (f"Per tutti i comuni la serie copre l'intero periodo "
+                     f"{stats['anno_min']}-{stats['anno_max']}.")
+    else:
+        dettagli = "; ".join(
+            f"per {r['Comune']}, per limiti della fonte disponibile, la serie inizia "
+            f"nel {int(r['Anno iniziale'])}" for _, r in parziali.iterrows()
+        )
+        copertura = (f"Per **{stats['n_comuni'] - len(parziali)}** comuni la serie copre "
+                     f"l'intero periodo {stats['anno_min']}-{stats['anno_max']}; {dettagli}.")
+
+    # strongest historical growers missing from Table 4: the example for the
+    # note on the polynomial fit. No example, no note
+    tabella_4 = set(df.nlargest(N_TOP, "Variazione % proiettata")["Comune"])
+    esempi = df.nlargest(N_TOP, "Variazione %")
+    # only fits that really follow the data, that's the point of the note
+    esempi = esempi[~esempi["Comune"].isin(tabella_4) & (esempi["R2 polinomio"] >= 0.9)].head(2)
+    in_calo = esempi[esempi["Variazione % proiettata"] < 0]
+    if esempi.empty:
+        nota_curvatura = ""
+        rimando_curvatura = "come mostrato nella Sezione 3.5"
+    else:
+        elenco = " e ".join(f"{r['Comune']} (storica {r['Variazione %']:+.1f}%)"
+                            for _, r in esempi.iterrows())
+        if in_calo.empty:
+            effetto = "ne riduce sensibilmente la crescita attesa"
+            rimando_curvatura = "come mostrato nella Sezione 3.5"
+        else:
+            r = in_calo.iloc[0]
+            effetto = (f"proietta per {r['Comune']} una variazione negativa "
+                       f"({r['Variazione % proiettata']:+.1f}% al {stats['anno_proiezione']})")
+            rimando_curvatura = f"come mostrato dal caso di {r['Comune']} (Sezione 3.5)"
+        nota_curvatura = f"""
+> **Attenzione a un artefatto della curvatura polinomiale.** Alcuni dei
+> comuni con la crescita storica {stats['anno_min']}-{stats['anno_max']} più
+> marcata, come {elenco}, **non compaiono** nella classifica delle migliori
+> prospettive: il fit polinomiale di secondo grado, pur descrivendo bene i
+> dati storici (R\u00b2 di almeno {esempi['R2 polinomio'].min():.2f}), {effetto}.
+> Questo è con ogni probabilità un artefatto
+> dell'estrapolazione quadratica — una parabola che si adatta bene a una
+> crescita che rallenta negli anni recenti può curvare verso il basso una
+> volta proiettata fuori dal periodo osservato — più che un segnale reale
+> di inversione di tendenza, ed è la ragione per cui queste proiezioni
+> vanno lette come indicazioni di massima e non come previsioni.
+"""
+
     if traiettorie_disponibili:
         sezione_traiettorie = f"""
 La Figura 7 mostra le stesse {2 * N_TOP} traiettorie in forma di serie
@@ -390,7 +477,12 @@ la proiezione lo colloca al {stats['anno_proiezione']}.
 """
     else:
         sezione_traiettorie = """
-> *Nota: il grafico delle traiettorie storiche complete non è disponibile.*
+> *Nota: il grafico delle traiettorie storiche complete non è disponibile
+> in questa esecuzione perché il file con la serie storica anno per anno
+> (`popolazione_combinata_1982_2026.csv`) non è stato trovato nella
+> cartella di lavoro — la tabella riassuntiva da sola non contiene i dati
+> intermedi necessari a tracciarlo. Aggiungilo alla cartella e rilancia lo
+> script per includerlo.*
 """
 
     return f"""---
@@ -480,10 +572,7 @@ scomposizione per sesso è disponibile.
 L'analisi copre **{stats['n_comuni']} comuni** dell'area del {NOME_AREA},
 selezionati come sottoinsieme dei comuni della provincia di Salerno
 ricadenti nell'area storico-geografica del {NOME_AREA} (Alto e Basso
-{NOME_AREA}, Vallo di Diano, Alburni). Per **{stats['n_comuni'] - 1}**
-comuni la serie copre l'intero periodo {stats['anno_min']}-{stats['anno_max']};
-per Capaccio Paestum, per limiti della fonte disponibile, la serie inizia
-nel 2002.
+{NOME_AREA}, Vallo di Diano, Alburni). {copertura}
 
 Per un sottoinsieme dell'analisi, i comuni sono stati classificati come
 **costieri** (n={stats['n_costa']}) se il loro territorio comunale si
@@ -623,21 +712,7 @@ i {N_TOP} comuni più a rischio e i {N_TOP} con le prospettive migliori.
      "Variazione % proiettata": "Var. % proiettata"}
 )}
 
-> **Attenzione a un artefatto della curvatura polinomiale.** Alcuni dei
-> comuni con la crescita storica {stats['anno_min']}-{stats['anno_max']} più
-> marcata — Agropoli (storica {df[df.Comune=="Agropoli"]["Variazione %"].iloc[0]:+.1f}%) e
-> Torchiara (storica {df[df.Comune=="Torchiara"]["Variazione %"].iloc[0]:+.1f}%) tra
-> gli altri — **non compaiono** nella classifica delle migliori prospettive:
-> il fit polinomiale di secondo grado, pur descrivendo bene i dati storici
-> (R\u00b2 > 0.97 per entrambi), proietta per Agropoli una variazione
-> negativa ({df[df.Comune=="Agropoli"]["Variazione % proiettata"].iloc[0]:+.1f}%
-> al {stats['anno_proiezione']}). Questo è con ogni probabilità un artefatto
-> dell'estrapolazione quadratica — una parabola che si adatta bene a una
-> crescita che rallenta negli anni recenti può curvare verso il basso una
-> volta proiettata fuori dal periodo osservato — più che un segnale reale
-> di inversione di tendenza, ed è la ragione per cui queste proiezioni
-> vanno lette come indicazioni di massima e non come previsioni.
-
+{nota_curvatura}
 # Discussione e limiti
 
 I risultati confermano, su una finestra temporale più ampia e con un
@@ -663,8 +738,8 @@ al {int(df['Anno proiezione'].max())} vanno lette come estrapolazioni di
 tendenza, non come previsioni demografiche in senso proprio. Terzo,
 l'andamento aggregato di Figura 5 è ricostruito dai modelli individuali e
 non da dati grezzi sommati anno per anno, il che ne limita l'affidabilità
-per la lettura di eventuali inversioni di tendenza recenti. Quarto, come
-mostrato dal caso di Agropoli (Sezione 3.5), l'estrapolazione polinomiale
+per la lettura di eventuali inversioni di tendenza recenti. Quarto,
+{rimando_curvatura}, l'estrapolazione polinomiale
 può curvare vistosamente al di fuori del periodo osservato anche quando il
 fit è eccellente sui dati storici: la classifica dei comuni "a rischio" o
 "in crescita" per il {stats['anno_proiezione']} va quindi interpretata come

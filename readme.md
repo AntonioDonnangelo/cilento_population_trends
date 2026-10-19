@@ -2,12 +2,18 @@
 
 Population trends of 91 towns in the Cilento area (province of Salerno), using
 ISTAT resident population data from 1982 to 2026. Linear and polynomial fits per
-comune, a comparison between coastal and inland towns, and a 20-year projection.
+comune, a comparison between coastal and inland towns, maps of the population and
+age change, and a 20-year projection.
+
+![Cilento 1982-2026: change of the population and of the mean age by comune](results/png/infografica_mappe.png)
+
+In 44 years the 91 towns lost 7.7% of their residents, from 247,872 to 228,858.
+67 of them have fewer residents than in 1982, and the mean age went up by 11 years,
+from 36.1 to 47.1. On the left of the infographic the population change of each
+comune, on the right how many years its mean age went up.
 
 The full report (in Italian) is in [`results/pdf/report_cilento.pdf`](results/pdf/report_cilento.pdf).
 The main results are also shown in the readme.
-
-A dynamic dashboard for visualization is available [here](https://antoniodonnangelo.shinyapps.io/trend_popolazione_cilento/).
 
 ## What the code does
 
@@ -32,23 +38,38 @@ A dynamic dashboard for visualization is available [here](https://antoniodonnang
 - Writes `results/report.md` and converts it to PDF with pandoc
   (`results/pdf/report_cilento.pdf`).
 
+### `maps.py`
+
+- Downloads the municipal boundaries of the province of Salerno (ISTAT, via
+  [geojson-italy](https://github.com/guglielmo/geojson-italy)) into `data/` the first
+  time it runs.
+- Joins them with `results/tabella_comuni.csv` and draws one map per variable:
+  population in 1982 and 2026, inhabitants per km² in 2026, % change of the
+  population and change of the mean age.
+- The mean age comes from `popolazione_combinata_1982_2026.csv`. The 1982 source puts
+  all ages from 85 up in one class, so in both years they are counted as 85.
+- Puts the population change and the age change side by side in
+  `results/png/infografica_mappe.png`.
+- Run it after `analisi_comuni.py`. It needs `geopandas`.
+
 ### Output
 
 ```
 results/
 ├── tabella_comuni.csv     summary table, one row per comune
 ├── report.md, report.css  report source
-├── png/                   all plots
+├── png/                   all plots, maps and the infographic
 └── pdf/                   report_cilento.pdf
+data/                      municipal boundaries, downloaded by maps.py
 ```
 
 ## Results
 
 ### Overall
 
-Across the 91 towns the population went from **248,765 to 230,044** residents
-(-18,721, **-7.5%**). Capaccio Paestum only has data from 2002, so its starting value
-is from 2002. Without it the change is -9.2%.
+Across the 91 towns the population went from **247,872 to 228,858** residents
+(-19,014, **-7.7%**). Capaccio Paestum only has data from 2002, so its starting value
+is from 2002. Without it the change is -9.3%.
 
 67 towns out of 91 (74%) lost population. The median change is **-20.5%**,
 33 towns lost more than 30% and 7 lost more than half:
@@ -86,7 +107,7 @@ Normalized trajectories (first year = 100):
 This is the main result. Coastal comuni have a median change of **+9.2%** (n=15),
 inland comuni **-25.3%** (n=76), so the gap is about 35 percentage points. Taken as
 groups, the coast went from 89,390 to 99,930 residents (+11.8%) and the inland from
-159,375 to 130,114 (-18.4%). The coastal share of the population went from 36% to 43%.
+158,482 to 128,928 (-18.6%). The coastal share of the population went from 36% to 44%.
 
 13 inland comuni grew (Torchiara, Castelnuovo Cilento,
 Novi Velia, Prignano Cilento, Giungano, ...), and 4 coastal ones shrank: Pisciotta
@@ -101,6 +122,16 @@ population and the % change is r = 0.31.
 
 ![Slope vs size](results/png/pendenza_vs_dimensione.png)
 
+### Maps
+
+The infographic at the top puts the change of the population next to the change of
+the mean age. The mean age went up in every comune. The largest increases are in
+Alfano (+20.3 years), Tortorella (+18.1) and Serramezzana (+17.7), the smallest in
+Prignano Cilento (+3.9), Laureana Cilento (+4.0) and Sant'Arsenio (+5.4).
+
+The single maps, including the population in 1982 and 2026 and the inhabitants per
+km², are in `results/png/` (`mappa_*.png`).
+
 ### Age structure
 
 Age pyramid of all the comuni together, 1982 vs 2026. The base is about half as
@@ -112,8 +143,8 @@ class, which is why there's a spike at 85.
 
 ### Projections to 2046
 
-The sum of the single linear fits gives -433 residents/year for the whole area,
-about 221,000 residents in 2046.
+The sum of the single linear fits gives -436 residents/year for the whole area,
+about 220,000 residents in 2046.
 
 ![Aggregate trend](results/png/andamento_aggregato.png)
 
