@@ -7,7 +7,7 @@ ISTAT resident population data from 1982 to 2026. Linear and polynomial fits per
 comune, a comparison between coastal and inland towns, maps of the population and
 age change, and a 20-year projection.
 
-![Cilento 1982-2026: change of the population and of the mean age by comune](results/png/infografica_mappe.png)
+![Cilento 1982-2026: change of the population and of the mean age by comune](results/png/infographic_map.png)
 
 In 44 years the 91 towns lost 7.7% of their residents, from 247,872 to 228,858.
 67 of them have fewer residents than in 1982, and the mean age went up by 11 years,
